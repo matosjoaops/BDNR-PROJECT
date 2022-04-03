@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nodemon src/app.ts",
     "start": "NODE_PATH=./build node build/app.js",
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "lint": "eslint . --ext .ts",
+    "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +22,10 @@
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.23",
-    "nodemon": "^2.0.15"
+    "@typescript-eslint/eslint-plugin": "^5.17.0",
+    "@typescript-eslint/parser": "^5.17.0",
+    "eslint": "^8.12.0",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.6.2"
   }
 }
