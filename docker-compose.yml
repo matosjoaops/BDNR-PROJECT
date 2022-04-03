@@ -7,10 +7,12 @@ services:
      - "8091:8091"
   backend:
     build: ./backend/
+    env_file:
+      - ./backend/.env
     ports:
       - "5000:5000"
     volumes:
-      - ./backend:/usr/src/app
+      - ./backend/src:/usr/src/app/src
     depends_on:
       - couchbase
 
