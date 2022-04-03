@@ -2,10 +2,10 @@
   "name": "bdnr-project-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "src/app.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
-    "start": "NODE_PATH=./build node build/index.js",
+    "dev": "nodemon src/app.ts",
+    "start": "NODE_PATH=./build node build/app.js",
     "build": "tsc -p ."
   },
   "keywords": [],
@@ -13,9 +13,12 @@
   "license": "ISC",
   "dependencies": {
     "couchbase": "^4.0.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
     "ts-node": "^10.7.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.13",
     "@types/node": "^17.0.23",
     "nodemon": "^2.0.15"
   }
