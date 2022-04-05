@@ -2,7 +2,7 @@
 
 import { Bucket, Cluster, Collection, connect, GetResult, MutationResult } from "couchbase"
 
-async function main() {
+export async function main() {
     const cluster: Cluster = await connect("couchbase://localhost", {
         username: "Administrator",
         password: "password"
@@ -61,11 +61,3 @@ async function main() {
 
     await getAirlineByKey("airline_8091")
 }
-
-// Run the main function
-main()
-    .catch((err) => {
-        console.log("ERR:", err)
-        process.exit(1)
-    })
-    .then(() => process.exit(0))

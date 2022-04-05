@@ -1,7 +1,14 @@
 import { Request, Response } from "express"
+import { main } from "../database"
 
 async function get(req: Request, res: Response) {
-    res.send("Hello World!")
+    // Run the main function
+    main()
+        .catch((err) => {
+            console.log("ERR:", err)
+            res.send("Did not work!")
+        })
+        .then(() => res.send("Worked!"))
 }
 
 export default {
