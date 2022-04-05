@@ -1,9 +1,7 @@
-"use strict"
-
 import { Bucket, Cluster, Collection, connect, GetResult, MutationResult } from "couchbase"
 
 export async function main() {
-    const cluster: Cluster = await connect("couchbase://localhost", {
+    const cluster: Cluster = await connect("couchbase://localhost?operationTimeout=2500", {
         username: "Administrator",
         password: "password"
     })
