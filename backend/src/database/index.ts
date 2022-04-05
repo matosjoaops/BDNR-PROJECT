@@ -1,10 +1,21 @@
 import { Bucket, Cluster, Collection, connect, GetResult, MutationResult } from "couchbase"
 
-export async function main() {
-    const cluster: Cluster = await connect("couchbase://localhost?operationTimeout=2500", {
-        username: "Administrator",
-        password: "password"
+const main = async () => {
+    console.log("Connecting......")
+    const cluster: Cluster = await connect("couchbase://127.0.0.1:8091/travel-sample", {
+        username: "admin",
+        password: "password",
+        timeouts: {
+            kvTimeout: 10000,
+            kvDurableTimeout: 10000,
+            viewTimeout: 10000,
+            queryTimeout: 10000,
+            analyticsTimeout: 10000,
+            searchTimeout: 10000,
+            managementTimeout: 10000
+        }
     })
+    console.log("Connected......")
 
     // get a reference to our bucket
     const bucket: Bucket = cluster.bucket("travel-sample")
@@ -59,3 +70,5 @@ export async function main() {
 
     await getAirlineByKey("airline_8091")
 }
+
+export default main

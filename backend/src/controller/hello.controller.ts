@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { main } from "../database"
+import main from "../database"
 
 async function get(req: Request, res: Response) {
     // Run the main function
