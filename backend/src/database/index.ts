@@ -1,5 +1,9 @@
 import { Bucket, Cluster, Collection, connect, GetResult, MutationResult } from "couchbase"
 
+// For this to work, you need to create a cluster "travel-sample",
+// then a bucket "travel-sample", then a scope "inventory",
+// then a collection "airline"
+
 const main = async () => {
     console.log("Connecting......")
     const cluster: Cluster = await connect("couchbase://couchbase", {
