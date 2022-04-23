@@ -2,7 +2,6 @@ version: "3.8"
 services:
     couchbase:
         image: couchbase/server
-        # not sure which port couchbase uses
         ports:
             - 8091:8091
             - 8092:8092
