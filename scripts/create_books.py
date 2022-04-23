@@ -1,14 +1,11 @@
 import pandas as pd
-import datetime
 import random
 import json
 from faker import Faker
 
 fake = Faker()
 
-books = pd.read_csv("./datasets/books.csv", on_bad_lines='skip', sep = ';',  dtype={'Year-Of-Publication': 'str'})
-
-print(books.columns)
+books = pd.read_csv("scripts/datasets/books.csv", on_bad_lines='skip', sep = ';',  dtype={'Year-Of-Publication': 'str'})
 
 posts = []
 
@@ -22,7 +19,7 @@ for i in range(NUMBER_OF_POSTS):
 
     book_row = books.sample(n = 1)
 
-    purchase_date = fake.date_between(start_date="-2y", end_date="now")
+    purchase_date = fake.date_between(start_date="-10y", end_date="-1y")
     post_type = random.choice(["buy", "sale", "normal"])
     
     prefix_title = ""
@@ -37,18 +34,19 @@ for i in range(NUMBER_OF_POSTS):
     post_title = prefix_title + " " + book_row["Book-Title"].values[0] + " by " + book_row["Book-Author"].values[0]
 
     post = {
+        "timestamp": str(fake.date_between(start_date="-1y", end_date="now")),
         "post_title": post_title,
         "post_type": post_type,
         "item_type": "book",
         "authors": book_row["Book-Author"].values[0],
         "title": book_row["Book-Title"].values[0],
-        "yearOfPublication": book_row["Year-Of-Publication"].values[0],
+        "year_of_publication": int(book_row["Year-Of-Publication"].values[0]),
         "isbn": book_row["ISBN"].values[0],
         "publisher": book_row["Publisher"].values[0],
-        "numberOfPages": random.randint(125, 1100),
+        "number_of_pages": random.randint(125, 1100),
     }
 
-    if (post_type != "normal"):
+    if (post_type == "sale"):
         post["purchase_date"] = str(purchase_date)
 
     if post_type == "normal":
@@ -81,6 +79,6 @@ for i in range(NUMBER_OF_POSTS):
     posts.append(post)
 
 
-with open("./results/books.json", "w") as file:
+with open("scripts/results/books.json", "w") as file:
     json.dump(posts, file)
 

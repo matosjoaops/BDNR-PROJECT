@@ -18,7 +18,7 @@ NUMBER_OF_POSTS = 1000
 for i in range(NUMBER_OF_POSTS):
     cars_row = cars_dataframe.sample(n = 1)
 
-    purchase_date = fake.date_between(start_date="-20y", end_date="now")
+    purchase_date = fake.date_between(start_date="-20y", end_date="-1y")
     post_type = random.choice(["buy", "sale", "normal"])
     
     prefix_title = ""
@@ -35,7 +35,7 @@ for i in range(NUMBER_OF_POSTS):
     picture_urls = ["url1", "url2", "url3"]
 
     post = {
-        "timestamp": fake.date_between(start_date="-1y", end_date="now"),
+        "timestamp": str(fake.date_between(start_date="-1y", end_date="now")),
         "post_title": post_title,
         "post_type": post_type,
         "item_type": "car",
@@ -47,7 +47,7 @@ for i in range(NUMBER_OF_POSTS):
         "pictures": picture_urls
     }
 
-    if (post_type != "normal"):
+    if (post_type == "sale"):
         post["purchase_date"] = str(purchase_date)
 
     if post_type == "normal":

@@ -25,7 +25,8 @@ NUMBER_OF_POSTS = 1000
 for i in range(NUMBER_OF_POSTS):
     phones_row = phones.sample(n = 1)
 
-    timestamp = fake.date_between(start_date="-10y", end_date="now")
+    timestamp = fake.date_between(start_date="-1y", end_date="now")
+    purchase_date = fake.date_between(start_date="-10y", end_date="-1y")
     post_type = random.choice(["buy", "sale", "normal"])
 
     if post_type == "buy":
@@ -40,6 +41,7 @@ for i in range(NUMBER_OF_POSTS):
     post = {
         "post_title": post_title,
         "timestamp": str(timestamp),
+        "post_type": post_type,
         "item_type": "phone",
         "model": phones_row["model"].values[0],
         "brand": phones_row["brand"].values[0],
@@ -51,6 +53,9 @@ for i in range(NUMBER_OF_POSTS):
         "battery": phones_row["battery"].values[0],
         "nfc": phones_row["NFC"].values[0]
     }
+
+    if (post_type == "sale"):
+        post["purchase_date"] = str(purchase_date)
 
     if post_type == "normal":
         if prefix_title == "I'm really happy with the phone":
@@ -70,7 +75,7 @@ for i in range(NUMBER_OF_POSTS):
     if math.isnan(price):
         rand_price = random.randint(0,1000)
         if post_type == "sale":
-            post["price"] =  rand_price
+            post["price"] = rand_price
         elif post_type == "buy":
             post["price_range"] = [
                 rand_price - random.randint(0, 300), 
@@ -78,11 +83,11 @@ for i in range(NUMBER_OF_POSTS):
             ]
     else:
         if post_type == "sale":
-            post["price"] = price
+            post["price"] = int(price)
         elif post_type == "buy":
             post["price_range"] = [
-                price - random.randint(0, 300), 
-                price + random.randint(0, 300)
+                int(price) - random.randint(0, 300), 
+                int(price) + random.randint(0, 300)
             ]
     
     if post_type == "buy" and post["price_range"][0] < 0:
