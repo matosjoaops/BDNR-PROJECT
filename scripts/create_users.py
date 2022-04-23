@@ -1,49 +1,27 @@
-from faker import Faker
 import json
 import random
-import uuid
 
-faker = Faker()
+with open("scripts/results/users_first_time.json", "r") as file:
+    users = json.load(file)
 
-NUMBER_OF_USERS = 1000
+for user in users:
+    num_followers = random.randint(0, 10)
+    num_following = random.randint(0, 10)
 
-users = []
+    user["following"] = []
 
+    for i in range(num_following):
+        following_id = random.choice(users)["id"]
+        while following_id == user["id"]:
+            following_id = random.choice(users)["id"]
+        user["following"].append(following_id)
 
-for i in range(NUMBER_OF_USERS):
-    username = faker.profile(fields=['username'])['username']
-    name = faker.name()
-    color = faker.color_name()
-    city = faker.city()
-    job = faker.job()
-    contact = faker.phone_number()
-
-    gender = 'M' if random.randint(0,1) == 0 else 'F'
-    possessive_pronoun = "Her" if gender == "F" else "His"
-    personal_pronoun = "She" if gender == "F" else "He"
-
-    bio = '{} name is {}. {} lives in {}. {} favorite color is {}. {} works as a {}'.format(
-        possessive_pronoun,
-        name,
-        personal_pronoun,
-        city,
-        possessive_pronoun,
-        color,
-        personal_pronoun,
-        job
-    )
-
-    user = {
-        "id": str(uuid.uuid4()),
-        "username": username,
-        "name": name,
-        "bio": bio,
-        "city": city,
-        "contact": contact
-    }
-
-    users.append(user)
-
+    user["followers"] = []
+    for i in range(num_followers):
+        follower_id = random.choice(users)["id"]
+        while follower_id == user["id"]:
+            follower_id = random.choice(users)["id"]
+        user["followers"].append(follower_id)
 
 with open("scripts/results/users.json", "w") as file:
     json.dump(users, file)

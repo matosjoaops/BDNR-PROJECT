@@ -2,12 +2,12 @@ from faker import Faker
 import json
 import random
 import uuid
-from os.path import exists
+import os
 import sys
 
-file_exists = exists("scripts/results/users_first_time.json")
+file_exists = os.path.exists("scripts/results/users_first_time.json")
 
-if file_exists
+if file_exists:
     sys.exit(0)
 
 faker = Faker()

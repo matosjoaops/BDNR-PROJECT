@@ -6,6 +6,7 @@ from faker import Faker
 fake = Faker()
 
 books = pd.read_csv("scripts/datasets/books.csv", on_bad_lines='skip', sep = ';',  dtype={'Year-Of-Publication': 'str'})
+books["Publisher"].fillna("None", inplace=True)
 
 posts = []
 
