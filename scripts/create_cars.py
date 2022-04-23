@@ -32,6 +32,8 @@ for i in range(NUMBER_OF_POSTS):
 
     post_title = prefix_title + " " + cars_row["name"].values[0]
 
+    picture_urls = ["url1", "url2", "url3"]
+
     post = {
         "timestamp": fake.date_between(start_date="-1y", end_date="now"),
         "post_title": post_title,
@@ -41,7 +43,8 @@ for i in range(NUMBER_OF_POSTS):
         "km_driven": int(cars_row["km_driven"].values[0]),
         "fuel": cars_row["fuel"].values[0],
         "transmission": cars_row["transmission"].values[0],
-        "owner": cars_row["owner"].values[0]
+        "owner": cars_row["owner"].values[0],
+        "pictures": picture_urls
     }
 
     if (post_type != "normal"):

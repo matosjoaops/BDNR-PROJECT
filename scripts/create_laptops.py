@@ -32,6 +32,8 @@ for i in range(NUMBER_OF_POSTS):
 
     post_title = prefix_title + " " + laptops_row["Manufacturer"].values[0] + " " + laptops_row["Model Name"].values[0]
 
+    picture_urls = ["url1", "url2", "url3"]
+
     post = {
         "timestamp": fake.date_between(start_date="-1y", end_date="now"),
         "post_title": post_title,
@@ -45,7 +47,8 @@ for i in range(NUMBER_OF_POSTS):
         "screen_size": laptops_row["Screen Size"].values[0],
         "model": laptops_row["Model Name"].values[0],
         "screen": laptops_row["Screen"].values[0],
-        "gpu": laptops_row["GPU"].values[0]
+        "gpu": laptops_row["GPU"].values[0],
+        "pictures": picture_urls
     }
 
     if (post_type != "normal"):
