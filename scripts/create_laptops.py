@@ -18,7 +18,7 @@ NUMBER_OF_POSTS = 1000
 for i in range(NUMBER_OF_POSTS):
     laptops_row = laptops.sample(n = 1)
 
-    timestamp = fake.date_between(start_date="-10y", end_date="now")
+    purchase_date = fake.date_between(start_date="-10y", end_date="now")
     post_type = random.choice(["buy", "sale", "normal"])
     
     prefix_title = ""
@@ -34,8 +34,8 @@ for i in range(NUMBER_OF_POSTS):
 
     post = {
         "post_title": post_title,
-        "timestamp": str(timestamp),
         "post_type": post_type,
+        "item_type": "computer",
         "operating_system": laptops_row["Operating System"].values[0],
         "manufacturer": laptops_row["Manufacturer"].values[0],
         "cpu": laptops_row["CPU"].values[0],
@@ -46,6 +46,9 @@ for i in range(NUMBER_OF_POSTS):
         "screen": laptops_row["Screen"].values[0],
         "gpu": laptops_row["GPU"].values[0]
     }
+
+    if (post_type != "normal"):
+        post["purchase_date"] = str(purchase_date)
 
     if post_type == "normal":
         if prefix_title == "I'm really happy with the laptop":
