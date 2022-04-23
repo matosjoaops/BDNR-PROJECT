@@ -33,6 +33,7 @@ for i in range(NUMBER_OF_POSTS):
     post_title = prefix_title + " " + laptops_row["Manufacturer"].values[0] + " " + laptops_row["Model Name"].values[0]
 
     post = {
+        "timestamp": fake.date_between(start_date="-1y", end_date="now"),
         "post_title": post_title,
         "post_type": post_type,
         "item_type": "computer",
