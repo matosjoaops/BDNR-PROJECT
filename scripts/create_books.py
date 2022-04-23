@@ -33,6 +33,8 @@ for i in range(NUMBER_OF_POSTS):
 
     post_title = prefix_title + " " + book_row["Book-Title"].values[0] + " by " + book_row["Book-Author"].values[0]
 
+    picture_urls = ["url1", "url2", "url3"]
+
     post = {
         "timestamp": str(fake.date_between(start_date="-1y", end_date="now")),
         "post_title": post_title,
@@ -44,6 +46,7 @@ for i in range(NUMBER_OF_POSTS):
         "isbn": book_row["ISBN"].values[0],
         "publisher": book_row["Publisher"].values[0],
         "number_of_pages": random.randint(125, 1100),
+        "pictures": picture_urls
     }
 
     if (post_type == "sale"):

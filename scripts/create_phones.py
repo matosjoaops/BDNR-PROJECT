@@ -38,6 +38,8 @@ for i in range(NUMBER_OF_POSTS):
 
     post_title = prefix_title + " " + phones_row["brand"].values[0] + " " + phones_row["model"].values[0]
 
+    picture_urls = ["url1", "url2", "url3"]
+
     post = {
         "post_title": post_title,
         "timestamp": str(timestamp),
@@ -51,7 +53,8 @@ for i in range(NUMBER_OF_POSTS):
         "display_size": phones_row["display_size"].values[0],
         "primary_camera": phones_row["primary_camera"].values[0],
         "battery": phones_row["battery"].values[0],
-        "nfc": phones_row["NFC"].values[0]
+        "nfc": phones_row["NFC"].values[0],
+        "pictures": picture_urls
     }
 
     if (post_type == "sale"):

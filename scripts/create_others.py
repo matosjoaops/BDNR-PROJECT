@@ -34,12 +34,15 @@ for i in range(NUMBER_OF_POSTS):
 
     post_title = prefix_title + " " + others_row["Title"].values[0]
 
+    picture_urls = ["url1", "url2", "url3"]
+
     post = {
         "timestamp": str(fake.date_between(start_date="-1y", end_date="now")),
         "post_title": post_title,
         "post_type": post_type,
         "item_type": "other",
-        "description": others_row["Description"].values[0]
+        "description": others_row["Description"].values[0],
+        "pictures": picture_urls
     }
 
     if (post_type == "sale"):
