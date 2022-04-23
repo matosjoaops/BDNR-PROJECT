@@ -7,60 +7,63 @@ fake = Faker()
 
 cars_dataframe = pd.read_csv("scripts/datasets/cars.csv")
 
-cars = []
+posts = []
 
-columns = ["name", "year", "selling_price", "km_driven", "fuel", "seller_type", "transmission", "owner"]
+columns = ["name", "year", "selling_price", "km_driven", "fuel", "transmission", "owner"]
 
 data = cars_dataframe[columns]
 
-NUMBER_OF_CARS = 1000
+NUMBER_OF_POSTS = 1000
 
-for i in range(NUMBER_OF_CARS):
+for i in range(NUMBER_OF_POSTS):
     cars_row = cars_dataframe.sample(n = 1)
 
-    timestamp = fake.date_between(start_date="-10y", end_date="now")
+    purchase_date = fake.date_between(start_date="-20y", end_date="now")
     post_type = random.choice(["buy", "sale", "normal"])
     
     prefix_title = ""
       
     if post_type == "buy":
-        prefix_title = "Buying laptop"
+        prefix_title = "Buying car"
     elif post_type == "sale":
-        prefix_title = "Selling laptop"
+        prefix_title = "Selling car"
     else:
-        prefix_title = random.choice(["I'm really happy with the laptop", "Reviewing the laptop", "Don't buy the laptop"]) 
+        prefix_title = random.choice(["I'm really happy with the car", "Reviewing the car", "Don't buy the car"]) 
 
-    post_title = prefix_title + " " + laptops_row["Manufacturer"].values[0] + " " + laptops_row["Model Name"].values[0]
+    post_title = prefix_title + " " + cars_row["name"].values[0]
+
+    picture_urls = ["url1", "url2", "url3"]
 
     post = {
+        "timestamp": fake.date_between(start_date="-1y", end_date="now"),
         "post_title": post_title,
-        "timestamp": str(timestamp),
         "post_type": post_type,
-        "operating_system": laptops_row["Operating System"].values[0],
-        "manufacturer": laptops_row["Manufacturer"].values[0],
-        "cpu": laptops_row["CPU"].values[0],
-        "ram": laptops_row["RAM"].values[0],
-        "storage": laptops_row["Storage"].values[0],
-        "screen_size": laptops_row["Screen Size"].values[0],
-        "model": laptops_row["Model Name"].values[0],
-        "screen": laptops_row["Screen"].values[0],
-        "gpu": laptops_row["GPU"].values[0]
+        "item_type": "car",
+        "year": min(int(cars_row["year"].values[0]), purchase_date.year),
+        "km_driven": int(cars_row["km_driven"].values[0]),
+        "fuel": cars_row["fuel"].values[0],
+        "transmission": cars_row["transmission"].values[0],
+        "owner": cars_row["owner"].values[0],
+        "pictures": picture_urls
     }
 
+    if (post_type != "normal"):
+        post["purchase_date"] = str(purchase_date)
+
     if post_type == "normal":
-        if prefix_title == "I'm really happy with the laptop":
-            description = "This item is really great! I really recommend that you give it a try!"
-        elif prefix_title == "Don't buy the laptop":
-            description = "I hate this product, never trust this seller again!"
+        if prefix_title == "I'm really happy with the car":
+            description = "This car is really great! I really recommend that you give it a try!"
+        elif prefix_title == "Don't buy the car":
+            description = "I hate this car, never trust this seller again!"
         else:
             description = random.choice([
-                "Great battery life! Great screen! Normal sound quality! Overall it's a good product.",
-                "I'm really disappointed with this! The screen is too small, things are very slow, and I don't have any space for files!"
+                "Great autonomy! Great design! Overall it's a good car.",
+                "I'm really disappointed with this! The autonomy is too low, the car is very slow, and I don't like the design!"
             ])
 
         post["description"] = description
         
-    price = int(float(laptops_row["Price (Euros)"].values[0].replace(',', '.')))
+    price = int(cars_row["selling_price"].values[0])
 
     if post_type == "sale":
         post["price"] = price
