@@ -1,8 +1,7 @@
 version: "3.8"
 services:
     couchbase:
-        platform: linux/x86_64
-        image: couchbase/server:6.6.5
+        image: couchbase/server
         ports:
             - 8091:8091
             - 8092:8092
