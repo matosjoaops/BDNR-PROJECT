@@ -1,7 +1,8 @@
 version: "3.8"
 services:
     couchbase:
-        image: couchbase/server
+        platform: linux/x86_64
+        image: couchbase/server:6.6.5
         ports:
             - 8091:8091
             - 8092:8092
@@ -12,7 +13,7 @@ services:
         env_file:
             - ./backend/.env
         ports:
-            - 5000:5000
+            - 10001:10001
         volumes:
             - ./backend/src:/usr/src/app/src
         depends_on:
