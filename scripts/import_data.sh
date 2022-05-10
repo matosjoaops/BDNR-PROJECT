@@ -25,7 +25,7 @@ couchbase-cli bucket-create -c http://0.0.0.0:8091 --username Administrator \
 --bucket-ramsize 1024
 
 
-sleep 1
+sleep 5
 
 
 echo
@@ -36,7 +36,7 @@ cbimport json -d file:///posts.json -c http://0.0.0.0:8091 -u Administrator -p b
 
 
 
-sleep 1
+sleep 5
 echo
 echo "Creating bucket for users..."
 echo
@@ -47,7 +47,7 @@ couchbase-cli bucket-create -c http://0.0.0.0:8091 --username Administrator \
 --bucket-ramsize 1024
 
 
-sleep 1
+sleep 5
 
 echo
 echo "Importing users..."
@@ -55,3 +55,18 @@ echo
 
 cbimport json -d file:///users.json -c http://0.0.0.0:8091 -u Administrator -p bdnr-12345 -b users  -f list -g %id%
 
+sleep 5
+
+echo
+echo "Creating indexes..."
+echo
+
+#cbq -u Administrator -p bdnr-12345 --script="\CONNECT http://0.0.0.0:8091"
+
+cbq -u Administrator -p bdnr-12345 --script="CREATE PRIMARY INDEX ON `users`;"
+
+cbq -u Administrator -p bdnr-12345 --script="CREATE PRIMARY INDEX ON `posts`;"
+
+echo
+echo "Done!"
+echo
