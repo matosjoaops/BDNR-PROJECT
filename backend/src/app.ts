@@ -12,3 +12,4 @@ app.listen(port, () => {
 })
 
 app.use("/hello", routes.hello)
+app.use("/user", routes.user)
