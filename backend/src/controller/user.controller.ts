@@ -22,11 +22,11 @@ async function get(req: Request, res: Response) {
         const queryResult = await cluster.query("SELECT * FROM users WHERE id=$1", {
             parameters: ["009011c5-c27c-4ad1-b803-fd4c157866b4"]
         })
-        queryResult.rows.forEach((row) => {
-            console.log(row)
-        })
+        // queryResult.rows.forEach((row) => {
+        //     console.log(row)
+        // })
 
-        res.status(200).json({ id: "123" })
+        res.status(200).json(queryResult)
     } catch (error) {
         res.status(500).json({ message: "Error getting user", error })
     }
