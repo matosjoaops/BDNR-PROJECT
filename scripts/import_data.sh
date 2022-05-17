@@ -63,9 +63,9 @@ echo
 
 #cbq -u Administrator -p bdnr-12345 --script="\CONNECT http://0.0.0.0:8091"
 
-cbq -u Administrator -p bdnr-12345 --script="CREATE PRIMARY INDEX ON `users`;"
+cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE PRIMARY INDEX ON \`users\`;"
 
-cbq -u Administrator -p bdnr-12345 --script="CREATE PRIMARY INDEX ON `posts`;"
+cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE PRIMARY INDEX ON \`posts\`;"
 
 echo
 echo "Done!"
