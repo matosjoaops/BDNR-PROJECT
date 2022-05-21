@@ -7,7 +7,7 @@ echo "Creating cluster for Couchbase..."
 echo
 
 couchbase-cli cluster-init -c http://0.0.0.0:8091 --cluster-name bdnr-project --cluster-username Administrator \
---cluster-password bdnr-12345 --services "data, query, index, fts, eventing, search" --cluster-ramsize 2048
+--cluster-password bdnr-12345 --services "data, query, index, fts, eventing, fts" --cluster-ramsize 4836
 
 sleep 5
 
@@ -66,6 +66,13 @@ echo
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE PRIMARY INDEX ON \`users\`;"
 
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE PRIMARY INDEX ON \`posts\`;"
+
+
+sleep 5
+
+# Create Full-Text search index for POSTS.
+
+
 
 echo
 echo "Done!"

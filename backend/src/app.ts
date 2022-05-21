@@ -13,3 +13,4 @@ app.listen(port, () => {
 
 app.use("/hello", routes.hello)
 app.use("/user", routes.user)
+app.use("/post", routes.post)
