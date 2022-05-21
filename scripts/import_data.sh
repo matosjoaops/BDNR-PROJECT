@@ -7,7 +7,7 @@ echo "Creating cluster for Couchbase..."
 echo
 
 couchbase-cli cluster-init -c http://0.0.0.0:8091 --cluster-name bdnr-project --cluster-username Administrator \
---cluster-password bdnr-12345 --services "data, query, index, fts, eventing" --cluster-ramsize 2048
+--cluster-password bdnr-12345 --services "data, query, index, fts, eventing, search" --cluster-ramsize 2048
 
 sleep 5
 
