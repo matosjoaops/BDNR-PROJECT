@@ -11,5 +11,7 @@ app.listen(port, () => {
     console.log(`Application running in port ${port}.`)
 })
 
+app.use(express.json())
+
 app.use("/hello", routes.hello)
 app.use("/user", routes.user)
