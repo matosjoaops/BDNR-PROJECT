@@ -98,9 +98,32 @@ async function _delete(req: Request, res: Response) {
     }
 }
 
+async function getUserPosts(req: Request, res: Response) {
+    try {
+        const cluster: Cluster = await connectToCluster()
+
+        const userId = req.params.id
+
+        const queryResult = await cluster.query("select * from posts where created_by like $1", {
+            parameters: [userId]
+        })
+
+        const result: JSON[] = []
+
+        queryResult.rows.forEach((row) => {
+            result.push(row.posts)
+        })
+
+        res.status(200).json(result)
+    } catch (error) {
+        res.status(500).json({ message: "Error getting user", error })
+    }
+}
+
 export default {
     get,
     post,
     put,
-    delete: _delete
+    delete: _delete,
+    getUserPosts
 }
