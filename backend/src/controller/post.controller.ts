@@ -9,16 +9,35 @@ async function get(req: Request, res: Response) {
 
         const cluster: Cluster = await connectToCluster()
 
-        const queryResult = await cluster.searchQuery(
-            'posts-index',
-            SearchQuery.match(req.query.text),
-            { limit: parseInt(req.params.limit.toString()) })
+        const { limit, searchText } = req.query
+
+        var limitPagination = 15
+
+        if (limit !== undefined) {
+            limitPagination = parseInt(req.params.limit.toString())
+        }
+
+        if (searchText !== undefined) {
+
+            const queryResult = await cluster.searchQuery(
+                "posts-index",
+                SearchQuery.queryString(searchText.toString()),
+                { timeout:2000, limit: limitPagination }
+            )
+
+            res.status(200).json(queryResult)
+
+        } 
+
+        const queryResult = await cluster.query(
+            "SELECT * from `posts` LIMIT " + limitPagination
+        )
 
         res.status(200).json(queryResult)
 
     } catch (error) {
 
-        res.status(500).json({ message: "Error getting user", error })
+        res.status(500).json({ message: "Error getting posts", error })
         
     }
 }
