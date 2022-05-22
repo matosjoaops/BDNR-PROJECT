@@ -64,15 +64,14 @@ echo
 #cbq -u Administrator -p bdnr-12345 --script="\CONNECT http://0.0.0.0:8091"
 
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE PRIMARY INDEX ON \`users\`;"
-
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE PRIMARY INDEX ON \`posts\`;"
 
-
-sleep 5
-
-# Create Full-Text search index for POSTS.
-
-
+cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX post_type_index ON \`posts\`(post_type);"
+cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX item_type_index ON \`posts\`(item_type);"
+cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX price_range_index ON \`posts\`(price_range);"
+cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX price_index ON \`posts\`(price);"
+cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX id_index ON \`users\`(id);"
+cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX username_index ON \`users\`(username);"
 
 echo
 echo "Done!"
