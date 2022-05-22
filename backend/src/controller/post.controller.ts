@@ -107,8 +107,8 @@ async function getRatio(req: Request, res: Response) {
                     * \
                     from `posts` as p \
                 ) as data \
-            where (data.num_likes / data.num_comments) > " +
-                minRatio
+            where (data.num_likes / data.num_comments) > $1",
+            { parameters: [minRatio] }
         )
 
         return res.status(200).json({ message: "Query was successful!", results: queryResult })
