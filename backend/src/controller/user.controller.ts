@@ -110,13 +110,15 @@ async function getUserPosts(req: Request, res: Response) {
 
         const result: JSON[] = []
 
+        // TODO: add the post id
         queryResult.rows.forEach((row) => {
+            delete row.posts.comments
             result.push(row.posts)
         })
 
         res.status(200).json(result)
     } catch (error) {
-        res.status(500).json({ message: "Error getting user", error })
+        res.status(500).json({ message: "Error getting user posts", error })
     }
 }
 
