@@ -104,7 +104,15 @@ async function getRatio(req: Request, res: Response) {
             from ( \
                     select array_count(p.comments) as num_comments,  \
                     array_count(p.liked_by) as num_likes, \
-                    * \
+                    timestamp, \
+                    post_title, \
+                    post_type, \
+                    item_type, \
+                    description, \
+                    price, \
+                    price_range, \
+                    meta().id, \
+                    created_by \
                     from `posts` as p \
                 ) as data \
             where (data.num_likes / data.num_comments) > $1",
