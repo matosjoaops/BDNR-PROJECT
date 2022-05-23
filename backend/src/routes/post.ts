@@ -11,7 +11,7 @@ router.delete("/:id", controller.delete)
 
 // Comments
 router.get("/comments/:postId", controller.getComments)
-router.post("/comments", controller.postComment)
+router.post("/comments/:postId", controller.postComment)
 router.put("/comments", controller.updateComment)
 router.delete("/comments", controller.deleteComment)
 

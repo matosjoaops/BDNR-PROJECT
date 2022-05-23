@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { Cluster, Bucket, Collection } from "couchbase"
+import {  Bucket, Cluster, Collection, connect, GetResult, QueryResult } from "couchbase"
 
 import connectToCluster from "../config/connect"
 
@@ -126,6 +126,9 @@ async function getRatio(req: Request, res: Response) {
 
 // COMMENTS
 
+/** 
+ * Returns comments for a specific post. 
+ */
 async function getComments(req: Request, res: Response) { 
     
     const { postId } = req.params
@@ -134,21 +137,46 @@ async function getComments(req: Request, res: Response) {
         
         const cluster: Cluster = await connectToCluster()
 
-        const userId = req.params.id
-
-        const queryResult = await cluster.query("SELECT posts.comments FROM posts WHERE id like $1", {
+        const queryResult = await cluster.query("SELECT comments FROM posts WHERE meta().id like $1", {
             parameters: [postId]
         })
-
 
         res.status(200).json(queryResult)
 
     } catch (error) {
+
         res.status(500).json({ message: "Error getting user posts", error })
+    
     }
+
 }
 
+/**
+ * Creates a new comment for a specific post.
+ */
 async function postComment(req: Request, res: Response) {
+
+    const { postId } = req.params
+    const { created_by, userId} = req.body // TODO: userID should come from JWT token, not from request body. 
+
+    try {
+
+        const cluster: Cluster = await connectToCluster()
+
+        const bucket: Bucket = cluster.bucket("posts")
+        const collection: Collection = bucket.defaultCollection()
+
+        await collection.mutateIn(postId, [
+            bucket.MutateInSpec.arrayAppend('comments', req.body),
+        ])
+
+        res.status(200).json({ message: `Comment for post with id '${postId}' was successfully created` })
+
+    } catch (error) {
+
+        res.status(500).json({ message: "Error creating user", error })
+   
+    }
 
 }
 
