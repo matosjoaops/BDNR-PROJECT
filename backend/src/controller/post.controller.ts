@@ -119,10 +119,61 @@ async function getRatio(req: Request, res: Response) {
     }
 }
 
+
+
+
+
+
+// COMMENTS
+
+async function getComments(req: Request, res: Response) { 
+    
+    const { postId } = req.params
+
+    try {
+        
+        const cluster: Cluster = await connectToCluster()
+
+        const userId = req.params.id
+
+        const queryResult = await cluster.query("SELECT posts.comments FROM posts WHERE id like $1", {
+            parameters: [postId]
+        })
+
+
+        res.status(200).json(queryResult)
+
+    } catch (error) {
+        res.status(500).json({ message: "Error getting user posts", error })
+    }
+}
+
+async function postComment(req: Request, res: Response) {
+
+}
+
+
+async function updateComment(req: Request, res: Response) {
+    
+}
+
+async function deleteComment(req: Request, res: Response) {
+
+}
+
+
+
+
+
+
 export default {
     get,
     post,
     put,
     delete: _delete,
-    getRatio
+    getRatio,
+    getComments,
+    postComment,
+    updateComment,
+    deleteComment
 }
