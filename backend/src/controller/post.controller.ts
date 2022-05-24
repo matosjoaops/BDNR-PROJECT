@@ -119,7 +119,7 @@ async function getRatio(req: Request, res: Response) {
             { parameters: [minRatio] }
         )
 
-        const results = queryResult.rows.map((row) => row.data);
+        const results = queryResult.rows.map((row) => row.data)
 
         return res.status(200).json({ results })
     } catch (error) {

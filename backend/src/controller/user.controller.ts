@@ -104,16 +104,19 @@ async function getUserPosts(req: Request, res: Response) {
 
         const userId = req.params.id
 
-        const queryResult = await cluster.query("select * from posts where created_by like $1", {
-            parameters: [userId]
-        })
+        const queryResult = await cluster.query(
+            "select *, meta().id from posts where created_by like $1",
+            {
+                parameters: [userId]
+            }
+        )
 
         const result: JSON[] = []
 
-        // TODO: add the post id
         queryResult.rows.forEach((row) => {
             delete row.posts.comments
-            result.push(row.posts)
+
+            result.push({ id: row.id, ...row.posts })
         })
 
         res.status(200).json(result)
