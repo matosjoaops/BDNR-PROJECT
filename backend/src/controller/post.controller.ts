@@ -104,14 +104,24 @@ async function getRatio(req: Request, res: Response) {
             from ( \
                     select array_count(p.comments) as num_comments,  \
                     array_count(p.liked_by) as num_likes, \
-                    * \
+                    timestamp, \
+                    post_title, \
+                    post_type, \
+                    item_type, \
+                    description, \
+                    price, \
+                    price_range, \
+                    meta().id, \
+                    created_by \
                     from `posts` as p \
                 ) as data \
             where (data.num_likes / data.num_comments) > $1",
             { parameters: [minRatio] }
         )
 
-        return res.status(200).json({ message: "Query was successful!", results: queryResult })
+        const results = queryResult.rows.map((row) => row.data)
+
+        return res.status(200).json({ results })
     } catch (error) {
         return res
             .status(500)
