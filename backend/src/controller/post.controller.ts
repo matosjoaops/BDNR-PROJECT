@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import {  Bucket, Cluster, Collection, connect, GetResult, QueryResult } from "couchbase"
+import couchbase from "couchbase"
 
 import connectToCluster from "../config/connect"
 
@@ -167,21 +168,57 @@ async function getComments(req: Request, res: Response) {
 async function postComment(req: Request, res: Response) {
 
     const { postId } = req.params
-    const { created_by, userId} = req.body // TODO: userID should come from JWT token, not from request body. 
+    const { created_by, text} = req.body // TODO: userID should come from JWT token, not from request body. 
 
     try {
 
         const cluster: Cluster = await connectToCluster()
 
         const bucket: Bucket = cluster.bucket("posts")
+
         const collection: Collection = bucket.defaultCollection()
 
-        await collection.mutateIn(postId, [
-            bucket.MutateInSpec.arrayAppend('comments', req.body),
-        ])
+        // Create new comment object.
+        var comment = {
+            text: text,
+            created_by: created_by,
+            liked_by: []
+        };
 
-        res.status(200).json({ message: `Comment for post with id '${postId}' was successfully created` })
+        // Fetch all data for post.
+        await collection
+            .get(postId)
+            .then(async ({ content }) => {
 
+                // Append new comment.
+                await content.comments.push(comment)
+
+                // Build new post object.
+                const updatedPost = {
+                    post_title: content.post_title,
+                    post_type: content.post_type,
+                    item_type: content.item_type,
+                    description: content.description,
+                    pictures: content.pictures,
+                    price_range: content.price_range,
+                    created_by: content.created_by,
+                    liked_by:  content.liked_by,
+                    comments: content.comments
+                }
+
+                // Update post object.
+                await collection.upsert(postId, updatedPost)
+
+                res.status(200).json({ message: `Comment for post with id '${postId}' was successfully created` })
+
+            })
+            .catch((error) =>
+                res.status(500).send({
+                    message: `Post with id '${postId}' not found`,
+                    error
+                })
+            )
+        
     } catch (error) {
 
         res.status(500).json({ message: "Error creating user", error })
