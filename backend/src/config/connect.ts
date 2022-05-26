@@ -20,6 +20,7 @@ async function connectToCluster(): Promise<Cluster> {
 
         return cluster
     } catch (error) {
+        console.log(error)
         console.error("Error connecting to couchbase!")
         throw new Error("Error connecting to couchbase!")
     }
