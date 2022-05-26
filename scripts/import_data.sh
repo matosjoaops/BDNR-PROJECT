@@ -73,6 +73,19 @@ cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE IND
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX id_index ON \`users\`(id);"
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX username_index ON \`users\`(username);"
 
+# echo
+# echo "Adding bdnr-couchbase2 to the cluster"
+# echo
+
+# couchbase-cli server-add -c 172.18.0.2 \
+# --username Administrator \
+# --password bdnr-12345 \
+# --server-add http://0.0.0.0:18091 \
+# --server-add-username Administrator \
+# --server-add-password bdnr-12345 \
+# --services "data, query, index, fts, eventing"
+
+
 echo
 echo "Done!"
 echo
