@@ -5,6 +5,7 @@ const router = express.Router()
 
 router.get("/ratio", controller.getRatio)
 router.get("/:id", controller.get)
+router.get("/", controller.getPosts)
 router.post("/", controller.post)
 router.put("/:id", controller.put)
 router.delete("/:id", controller.delete)

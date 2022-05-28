@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import {  Bucket, Cluster, Collection, connect, GetResult, QueryResult} from "couchbase"
+import {  Bucket, Cluster, Collection } from "couchbase"
 
 import connectToCluster from "../config/connect"
 
@@ -7,7 +7,7 @@ import connectToCluster from "../config/connect"
 // POSTS.
 
 /**
- * Get list of posts.
+ * Get specific post.
  */
 async function get(req: Request, res: Response) {
     try {
@@ -24,6 +24,43 @@ async function get(req: Request, res: Response) {
         res.status(500).json({ message: "Error getting post", error })
     }
 }
+
+/**
+ * Get posts.
+ */
+async function getPosts(req: Request, res: Response) {
+    try {
+        const cluster: Cluster = await connectToCluster()
+
+        const limit = req.body.limit
+        const offset = req.body.offset
+
+        const itemType = req.body.item_type
+        const postType = req.body.post_type
+
+        const queryResult = await cluster.query("SELECT *, meta().id FROM posts\
+            where \
+                item_type like $itemType and\
+                post_type like $postType\
+            order by timestamp desc\
+            offset $offset\
+            limit $limit;",
+            { parameters: {itemType, postType, offset, limit} })
+
+        const result: JSON[] = []
+
+        queryResult.rows.forEach((row) => {
+            delete row.posts.comments
+
+            result.push({ id: row.id, ...row.posts })
+        })
+
+        res.status(200).json(result)
+    } catch (error) {
+        res.status(500).json({ message: "Error getting posts", error })
+    }
+}
+
 
 /**
  * Create a new post.
@@ -199,7 +236,7 @@ async function postComment(req: Request, res: Response) {
         // Create new comment object.
         // Since we are handling comment's IDs ourselves, we try to generate an unique number for it.
         // Not the best solution, but ...
-        var comment = {
+        const comment = {
             id: String(Math.floor((Date.now() * Math.random()) / 1000)),
             text: text,
             created_by: created_by,
@@ -380,6 +417,7 @@ async function deleteComment(req: Request, res: Response) {
 
 export default {
     get,
+    getPosts,
     post,
     put,
     delete: _delete,
