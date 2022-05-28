@@ -15,7 +15,8 @@ services:
         container_name: couchbase
         image: couchbase/server
         networks:
-            - bdnr-project_default
+            bdnr-project_default:
+                ipv4_address: 172.19.0.2
         ports:
             - 8091:8091
             - 8092:8092
@@ -26,7 +27,9 @@ services:
         container_name: couchbase2
         image: couchbase/server
         networks:
-            - bdnr-project_default
+            bdnr-project_default:
+                ipv4_address: 172.19.0.4
+
         links:
             - couchbase
         depends_on:

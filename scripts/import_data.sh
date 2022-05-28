@@ -64,26 +64,37 @@ echo
 #cbq -u Administrator -p bdnr-12345 --script="\CONNECT http://0.0.0.0:8091"
 
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE PRIMARY INDEX ON \`users\`;"
+sleep 1
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE PRIMARY INDEX ON \`posts\`;"
-
+sleep 1
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX post_type_index ON \`posts\`(post_type);"
+sleep 1
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX item_type_index ON \`posts\`(item_type);"
+sleep 1
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX price_range_index ON \`posts\`(price_range);"
+sleep 1
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX price_index ON \`posts\`(price);"
+sleep 1
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX id_index ON \`users\`(id);"
+sleep 1
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE INDEX username_index ON \`users\`(username);"
+sleep 1
 
-# echo
-# echo "Adding bdnr-couchbase2 to the cluster"
-# echo
+echo
+echo "Adding couchbase2 to the cluster"
+echo
 
-# couchbase-cli server-add -c 172.18.0.2 \
-# --username Administrator \
-# --password bdnr-12345 \
-# --server-add http://0.0.0.0:18091 \
-# --server-add-username Administrator \
-# --server-add-password bdnr-12345 \
-# --services "data, query, index, fts, eventing"
+# curl -u Administrator:bdnr-12345 -v -X POST \
+# 0.0.0.0:8091/controller/addNode \
+# -d 'hostname=172.19.0.4&user=Administrator&password=bdnr-12345&services=kv'
+
+couchbase-cli server-add -c http://0.0.0.0:8091 \
+--username Administrator \
+--password bdnr-12345 \
+--server-add 172.19.0.4 \
+--server-add-username Administrator \
+--server-add-password bdnr-12345 \
+--services "data, query, index, fts, eventing"
 
 
 echo
