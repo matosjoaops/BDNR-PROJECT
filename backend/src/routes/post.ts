@@ -12,7 +12,7 @@ router.delete("/:id", controller.delete)
 // Comments
 router.get("/:postId/comments", controller.getComments)
 router.post("/:postId/comments", controller.postComment)
-router.put("/:postId/comments", controller.updateComment)
+router.patch("/:postId/comments/:commentId", controller.updateComment)
 router.delete("/:postId/comments/:commentId", controller.deleteComment)
 
 

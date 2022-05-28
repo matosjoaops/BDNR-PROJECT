@@ -226,11 +226,77 @@ async function postComment(req: Request, res: Response) {
 
 }
 
-
+/**
+ * Edit data from an existing comment.
+ */
 async function updateComment(req: Request, res: Response) {
-    
+
+    const { postId, commentId} = req.params
+    const { text} = req.body // TODO: userID should come from JWT token, not from request body. 
+
+    try {
+
+        const cluster: Cluster = await connectToCluster()
+
+        const bucket: Bucket = cluster.bucket("posts")
+
+        const collection: Collection = bucket.defaultCollection()
+
+        // Fetch all data for post.
+        await collection
+            .get(postId)
+            .then(async ({ content }) => {
+
+                // Get comment to edit.
+                const commentToEdit = content.comments.find((item: { id: string }) => {
+                    return item.id == commentId;
+                });
+
+                // Update comment.
+                commentToEdit.text = text
+
+                // Create new array of comments without the edited comment.
+                const arr = content.comments.filter((item: { id: string }) => item.id !== String(commentId));
+
+                // Add updated comment again
+                await content.comments.push(commentToEdit)
+
+                // Build new post object.
+                const updatedPost = {
+                    post_title: content.post_title,
+                    post_type: content.post_type,
+                    item_type: content.item_type,
+                    description: content.description,
+                    pictures: content.pictures,
+                    price_range: content.price_range,
+                    created_by: content.created_by,
+                    liked_by:  content.liked_by,
+                    comments: content.comments
+                }
+
+                // Update post object.
+                await collection.upsert(postId, updatedPost)
+
+                res.status(200).json({ message: `Comment for post with id '${postId}' was successfully updated` })
+
+            })
+            .catch((error) =>
+                res.status(500).send({
+                    message: `Post with id '${postId}' not found`,
+                    error
+                })
+            )
+        
+    } catch (error) {
+
+        res.status(500).json({ message: "Error updating comment", error })
+   
+    }
 }
 
+/**
+ * Delete a comment.
+ */
 async function deleteComment(req: Request, res: Response) {
 
     const { postId, commentId} = req.params
