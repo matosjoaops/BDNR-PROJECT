@@ -9,4 +9,12 @@ router.post("/", controller.post)
 router.put("/:id", controller.put)
 router.delete("/:id", controller.delete)
 
+// Comments
+router.get("/:postId/comments", controller.getComments)
+router.post("/:postId/comments", controller.postComment)
+router.patch("/:postId/comments/:commentId", controller.updateComment)
+router.delete("/:postId/comments/:commentId", controller.deleteComment)
+
+
+
 export default router
