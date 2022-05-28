@@ -3,7 +3,7 @@ import { Cluster, connect } from "couchbase"
 async function connectToCluster(): Promise<Cluster> {
     try {
         console.log("Connecting......")
-        const cluster: Cluster = await connect("couchbase://cdcouchbase", {
+        const cluster: Cluster = await connect("couchbase://couchbase", {
             username: "Administrator",
             password: "bdnr-12345",
             timeouts: {
