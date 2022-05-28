@@ -10,6 +10,9 @@ services:
             - ./backend/src:/usr/src/app/src
         depends_on:
             - couchbase
+        networks:
+            bdnr-project_default:
+                ipv4_address: 172.19.0.3
 
     couchbase:
         container_name: couchbase
