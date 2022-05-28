@@ -3,6 +3,12 @@ import {  Bucket, Cluster, Collection, connect, GetResult, QueryResult} from "co
 
 import connectToCluster from "../config/connect"
 
+
+// POSTS.
+
+/**
+ * Get list of posts.
+ */
 async function get(req: Request, res: Response) {
     try {
         const cluster: Cluster = await connectToCluster()
@@ -19,6 +25,9 @@ async function get(req: Request, res: Response) {
     }
 }
 
+/**
+ * Create a new post.
+ */
 async function post(req: Request, res: Response) {
     try {
         const cluster: Cluster = await connectToCluster()
@@ -35,6 +44,9 @@ async function post(req: Request, res: Response) {
     }
 }
 
+/**
+ * Update an existing post.
+ */
 async function put(req: Request, res: Response) {
     try {
         const cluster: Cluster = await connectToCluster()
@@ -77,6 +89,9 @@ async function put(req: Request, res: Response) {
     }
 }
 
+/**
+ * Delete a post.
+ */
 async function _delete(req: Request, res: Response) {
     try {
         const cluster: Cluster = await connectToCluster()
@@ -93,6 +108,10 @@ async function _delete(req: Request, res: Response) {
     }
 }
 
+
+/**
+ * Get list of posts with ratio of likes to comments higher than a specified threshold.
+ */
 async function getRatio(req: Request, res: Response) {
     try {
         const cluster: Cluster = await connectToCluster()
