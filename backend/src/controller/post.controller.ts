@@ -1,6 +1,5 @@
 import { Request, Response } from "express"
-import {  Bucket, Cluster, Collection, connect, GetResult, QueryResult } from "couchbase"
-import couchbase from "couchbase"
+import {  Bucket, Cluster, Collection, connect, GetResult, QueryResult} from "couchbase"
 
 import connectToCluster from "../config/connect"
 
@@ -156,7 +155,7 @@ async function getComments(req: Request, res: Response) {
 
     } catch (error) {
 
-        res.status(500).json({ message: "Error getting user posts", error })
+        res.status(500).json({ message: "Error getting comments", error })
     
     }
 
@@ -221,7 +220,7 @@ async function postComment(req: Request, res: Response) {
         
     } catch (error) {
 
-        res.status(500).json({ message: "Error creating user", error })
+        res.status(500).json({ message: "Error creating comment", error })
    
     }
 
@@ -234,6 +233,56 @@ async function updateComment(req: Request, res: Response) {
 
 async function deleteComment(req: Request, res: Response) {
 
+    const { postId, commentId} = req.params
+
+    try {
+
+        const cluster: Cluster = await connectToCluster()
+
+        const bucket: Bucket = cluster.bucket("posts")
+
+        const collection: Collection = bucket.defaultCollection()
+
+
+        // Fetch all data for post.
+        await collection
+            .get(postId)
+            .then(async ({ content }) => {
+
+                // Create new array of comments without the specified comment.
+                const arr = content.comments.filter((item: { id: string }) => item.id !== String(commentId));
+
+                // Build new post object.
+                const updatedPost = {
+                    post_title: content.post_title,
+                    post_type: content.post_type,
+                    item_type: content.item_type,
+                    description: content.description,
+                    pictures: content.pictures,
+                    price_range: content.price_range,
+                    created_by: content.created_by,
+                    liked_by:  content.liked_by,
+                    comments: arr
+                }
+
+                // Update post object.
+                await collection.upsert(postId, updatedPost)
+
+                res.status(200).json({ message: `Comment '${commentId}' for post '${postId}' was successfully deleted` })
+
+            })
+            .catch((error) =>
+                res.status(500).send({
+                    message: `Unexpected error ocurred.`,
+                    error
+                })
+            )
+        
+    } catch (error) {
+
+        res.status(500).json({ message: "Error while deleting comment", error })
+   
+    }
 }
 
 

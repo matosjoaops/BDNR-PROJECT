@@ -10,10 +10,10 @@ router.put("/:id", controller.put)
 router.delete("/:id", controller.delete)
 
 // Comments
-router.get("/comments/:postId", controller.getComments)
-router.post("/comments/:postId", controller.postComment)
-router.put("/comments", controller.updateComment)
-router.delete("/comments", controller.deleteComment)
+router.get("/:postId/comments", controller.getComments)
+router.post("/:postId/comments", controller.postComment)
+router.put("/:postId/comments", controller.updateComment)
+router.delete("/:postId/comments/:commentId", controller.deleteComment)
 
 
 
