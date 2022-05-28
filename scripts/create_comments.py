@@ -18,7 +18,7 @@ for i in range(NUMBER_OF_COMMENTS):
     
     text = comment_row["reviews.text"].values[0]
     comment = {
-        "id": i,
+        "id": str(i),
         "text": text,
         "created_by": random.choice(users)["id"]
     }
