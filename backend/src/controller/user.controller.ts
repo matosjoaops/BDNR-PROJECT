@@ -125,10 +125,39 @@ async function getUserPosts(req: Request, res: Response) {
     }
 }
 
+async function follow(req: Request, res: Response) {
+    try {
+    
+        const cluster: Cluster = await connectToCluster();
+        const userThatWillFollow = req.params.id;
+        const { userThatWillBeFollowed } = req.body;
+
+        await cluster.transactions().run(async (ctx) => {
+            ctx.query(" \
+            update `users` \
+            set `users`.`following` = array_append(`users`.`following`, $1) \
+            where id = $2 \
+            "), {parameters: [userThatWillBeFollowed, userThatWillFollow]}
+
+            ctx.query(" \
+            update `users` \
+            set `users`.followers = array_append(`users`.followers, $1) \
+            where id = $2 \
+            "), {parameters: [userThatWillFollow, userThatWillBeFollowed]}
+        })
+
+        return res.status(200).json({ message: "Follow request was processed successfully!"})
+            
+    } catch (error) {
+        return res.status(500).json({ message: "Error processing follow request!", error })
+    }
+}
+
 export default {
     get,
     post,
     put,
     delete: _delete,
-    getUserPosts
+    getUserPosts,
+    follow
 }
