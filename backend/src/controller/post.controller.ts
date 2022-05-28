@@ -178,7 +178,10 @@ async function postComment(req: Request, res: Response) {
         const collection: Collection = bucket.defaultCollection()
 
         // Create new comment object.
+        // Since we are handling comment's IDs ourselves, we try to generate an unique number for it.
+        // Not the best solution, but ...
         var comment = {
+            id: String(Math.floor((Date.now() * Math.random()) / 1000)),
             text: text,
             created_by: created_by,
             liked_by: []
@@ -208,7 +211,7 @@ async function postComment(req: Request, res: Response) {
                 // Update post object.
                 await collection.upsert(postId, updatedPost)
 
-                res.status(200).json({ message: `Comment for post with id '${postId}' was successfully created` })
+                res.status(200).json(comment)
 
             })
             .catch((error) =>
