@@ -6,7 +6,7 @@ import { Bucket, Cluster, Collection, connect, GetResult, MutationResult } from 
 
 const main = async () => {
     console.log("Connecting......")
-    const cluster: Cluster = await connect("couchbase://couchbase", {
+    const cluster: Cluster = await connect("couchbase1://couchbase1", {
         username: "Administrator",
         password: "password",
         timeouts: {

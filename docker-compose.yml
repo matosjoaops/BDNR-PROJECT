@@ -1,12 +1,5 @@
 version: "3.8"
 services:
-    couchbase:
-        image: couchbase/server
-        ports:
-            - 8091:8091
-            - 8092:8092
-            - 8093:8093
-            - 11210:11210
     backend:
         build: ./backend/
         env_file:
@@ -17,3 +10,33 @@ services:
             - ./backend/src:/usr/src/app/src
         depends_on:
             - couchbase
+
+    couchbase:
+        container_name: couchbase
+        image: couchbase/server
+        networks:
+            - bdnr-project_default
+        ports:
+            - 8091:8091
+            - 8092:8092
+            - 8093:8093
+            - 8094:8094
+            - 11210:11210
+    couchbase2:
+        container_name: couchbase2
+        image: couchbase/server
+        networks:
+            - bdnr-project_default
+        links:
+            - couchbase
+        depends_on:
+            - couchbase
+        ports:
+            - 18091:8091
+            - 18092:8092
+            - 18093:8093
+            - 18094:8094
+            - 21210:11210
+networks:
+    bdnr-project_default:
+        external: true
