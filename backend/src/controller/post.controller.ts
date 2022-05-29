@@ -61,6 +61,34 @@ async function getPosts(req: Request, res: Response) {
     }
 }
 
+/**
+ * Get posts liked by a user.
+ */
+async function getUserLikedPosts(req: Request, res: Response) {
+    try {
+        const cluster: Cluster = await connectToCluster()
+
+        const userId = req.params.userId
+
+        const queryResult = await cluster.query("SELECT *, meta().id FROM posts\
+            where \
+                $userId in liked_by\
+            order by timestamp desc;",
+            { parameters: {userId} })
+
+        const result: JSON[] = []
+
+        queryResult.rows.forEach((row) => {
+            delete row.posts.comments
+
+            result.push({ id: row.id, ...row.posts })
+        })
+
+        res.status(200).json(result)
+    } catch (error) {
+        res.status(500).json({ message: `Error getting posts liked by user ${req.params.userId}`, error })
+    }
+}
 
 /**
  * Create a new post.
@@ -418,6 +446,7 @@ async function deleteComment(req: Request, res: Response) {
 export default {
     get,
     getPosts,
+    getUserLikedPosts,
     post,
     put,
     delete: _delete,

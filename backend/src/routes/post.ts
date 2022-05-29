@@ -3,6 +3,7 @@ import controller from "../controller/post.controller"
 
 const router = express.Router()
 
+router.get("/user-liked/:userId", controller.getUserLikedPosts)
 router.get("/ratio", controller.getRatio)
 router.get("/:id", controller.get)
 router.get("/", controller.getPosts)
