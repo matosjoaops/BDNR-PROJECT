@@ -101,7 +101,7 @@ async function _delete(req: Request, res: Response) {
                 "\
                 update `users`\
                 set `users`.`following` = array_remove(`users`.`following`, $1) \
-                ",
+                where array_contains(`users`.`following`, $1)",
                 { parameters: [userId] }
             )
 
@@ -109,7 +109,7 @@ async function _delete(req: Request, res: Response) {
                 "\
                 update `users`\
                 set `users`.followers = array_remove(`users`.followers, $1) \
-                ",
+                where array_contains(`users`.followers, $1)",
                 { parameters: [userId] }
             )
 
