@@ -4,6 +4,9 @@ import controller from "../controller/post.controller"
 const router = express.Router()
 
 router.get("/user-liked/:userId", controller.getUserLikedPosts)
+router.get("/post-type-distribution", controller.getPostTypeDistribution)
+router.get("/item-type-distribution", controller.getItemTypeDistribution)
+
 router.get("/ratio", controller.getRatio)
 router.get("/:id", controller.get)
 router.get("/", controller.getPosts)

@@ -213,8 +213,51 @@ async function getRatio(req: Request, res: Response) {
     }
 }
 
+/**
+ * Get post type distribution.
+ */
+async function getPostTypeDistribution(req: Request, res: Response) {
+    try {
+        const cluster: Cluster = await connectToCluster()
 
+        const queryResult = await cluster.query("\
+            select\
+                (count(*) / (select count(*) as total from posts posts1)[0].total) as ratio,\
+                post_type\
+            from posts\
+            group by post_type;"
+        )
 
+        return res.status(200).json(queryResult.rows)
+    } catch (error) {
+        return res
+            .status(500)
+            .json({ message: "Error getting post type distribution!", error })
+    }
+}
+
+/**
+ * Get item type distribution.
+ */
+async function getItemTypeDistribution(req: Request, res: Response) {
+    try {
+        const cluster: Cluster = await connectToCluster()
+
+        const queryResult = await cluster.query("\
+            select\
+                (count(*) / (select count(*) as total from posts posts1)[0].total) as ratio,\
+                item_type\
+            from posts\
+            group by item_type;"
+        )
+
+        return res.status(200).json(queryResult.rows)
+    } catch (error) {
+        return res
+            .status(500)
+            .json({ message: "Error getting item type distribution!", error })
+    }
+}
 
 
 
@@ -451,6 +494,8 @@ export default {
     put,
     delete: _delete,
     getRatio,
+    getPostTypeDistribution,
+    getItemTypeDistribution,
     getComments,
     postComment,
     updateComment,
