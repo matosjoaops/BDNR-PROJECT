@@ -97,6 +97,22 @@ async function _delete(req: Request, res: Response) {
 
             ctx.query("delete from `posts` where created_by = $1", { parameters: [userId] })
 
+            ctx.query(
+                "\
+                update `users`\
+                set `users`.`following` = array_remove(`users`.`following`, $1) \
+                ",
+                { parameters: [userId] }
+            )
+
+            ctx.query(
+                "\
+                update `users`\
+                set `users`.followers = array_remove(`users`.followers, $1) \
+                ",
+                { parameters: [userId] }
+            )
+
             const nestedCreatedComments = await ctx.query(
                 "select distinct *\
                 from  (select all_comms.*\
