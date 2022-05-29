@@ -19,6 +19,31 @@ async function get(req: Request, res: Response) {
     }
 }
 
+/* async function getUsersThatCommentedAndLikedPost(req: Request, res: Response) {
+    try {
+        const cluster: Cluster = await connectToCluster()
+
+        const queryResult = await cluster.query("select users.id as id1, posts.id as id2 from users join posts\
+            on posts.created_by = users.id\
+            where users.id = '1fe143f2-7e13-483b-9c4e-ef9576f750b0';"
+        )
+
+        const result: JSON[] = []
+
+        console.log(queryResult)
+
+        queryResult.rows.forEach((row) => {
+            delete row.posts.comments
+
+            result.push({ id: row.id, ...row.posts })
+        })
+
+        res.status(200).json(result)
+    } catch (error) {
+        res.status(500).json({ message: "Error getting user", error })
+    }
+} */
+
 async function post(req: Request, res: Response) {
     try {
         const cluster: Cluster = await connectToCluster()
@@ -127,6 +152,7 @@ async function getUserPosts(req: Request, res: Response) {
 
 export default {
     get,
+    // getUsersThatCommentedAndLikedPost,
     post,
     put,
     delete: _delete,
