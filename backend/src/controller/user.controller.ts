@@ -210,18 +210,18 @@ async function follow(req: Request, res: Response) {
             update `users` \
             set `users`.`following` = array_append(`users`.`following`, $1) \
             where id = $2 \
-            "
-            ),
+            ",
                 { parameters: [userThatWillBeFollowed, userThatWillFollow] }
+            )
 
             ctx.query(
                 " \
             update `users` \
             set `users`.followers = array_append(`users`.followers, $1) \
             where id = $2 \
-            "
-            ),
+            ",
                 { parameters: [userThatWillFollow, userThatWillBeFollowed] }
+            )
         })
 
         return res.status(200).json({ message: "Follow request was processed successfully!" })
