@@ -9,5 +9,6 @@ router.get("/:id", controller.get)
 router.post("/", controller.post)
 router.put("/:id", controller.put)
 router.delete("/:id", controller.delete)
+router.patch("/:id/follow", controller.follow)
 
 export default router

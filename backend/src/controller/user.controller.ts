@@ -111,11 +111,84 @@ async function _delete(req: Request, res: Response) {
     try {
         const cluster: Cluster = await connectToCluster()
 
-        const bucket: Bucket = cluster.bucket("users")
-        const collection: Collection = bucket.defaultCollection()
+        // const bucket: Bucket = cluster.bucket("users")
+        // const collection: Collection = bucket.defaultCollection()
 
         const userId = req.params.id
-        await collection.remove(userId)
+        // await collection.remove(userId)
+
+        await cluster.transactions().run(async (ctx) => {
+            ctx.query("delete from `users` where id = $1", { parameters: [userId] })
+
+            ctx.query("delete from `posts` where created_by = $1", { parameters: [userId] })
+
+            ctx.query(
+                "\
+                update `users`\
+                set `users`.`following` = array_remove(`users`.`following`, $1) \
+                where array_contains(`users`.`following`, $1)",
+                { parameters: [userId] }
+            )
+
+            ctx.query(
+                "\
+                update `users`\
+                set `users`.followers = array_remove(`users`.followers, $1) \
+                where array_contains(`users`.followers, $1)",
+                { parameters: [userId] }
+            )
+
+            const nestedCreatedComments = await ctx.query(
+                "select distinct *\
+                from  (select all_comms.*\
+                from `posts`\
+                unnest `posts`.comments as all_comms\
+                ) as all_comments\
+                where created_by = $1",
+                { parameters: [userId] }
+            )
+
+            const createdComments = nestedCreatedComments.rows.map((row) => row.all_comments)
+
+            createdComments.forEach((comment) => {
+                ctx.query(
+                    "\
+                    update `posts`\
+                    set `posts`.comments = array_remove(`posts`.comments, $1) \
+                    where array_contains(comments, $1)",
+                    { parameters: [comment] }
+                )
+            })
+
+            ctx.query(
+                "\
+                update `posts`\
+                set `posts`.liked_by = array_remove(`posts`.liked_by, $1)\
+                where array_contains(liked_by, $1)",
+                { parameters: [userId] }
+            )
+
+            const nestedLikedComments = await ctx.query(
+                "select distinct *\
+                from (select all_comms.*\
+                from `posts`\
+                unnest `posts`.comments as all_comms) as all_comments\
+                where array_contains(liked_by, $1)",
+                { parameters: [userId] }
+            )
+
+            const likedComments = nestedLikedComments.rows.map((row) => row.all_comments)
+
+            likedComments.forEach((comment) => {
+                ctx.query(
+                    "\
+                update `posts` \
+                set `posts`.comments[array_position(`posts`.comments, $1)].liked_by = array_remove(`posts`.comments[array_position(`posts`.comments, $1)].liked_by, $2)\
+                where array_contains(comments, $1)",
+                    { parameters: [comment, userId] }
+                )
+            })
+        })
 
         res.status(200).json({ message: `User with id '${userId}' successfully removed` })
     } catch (error) {
@@ -150,11 +223,44 @@ async function getUserPosts(req: Request, res: Response) {
     }
 }
 
+async function follow(req: Request, res: Response) {
+    try {
+        const cluster: Cluster = await connectToCluster()
+        const userThatWillFollow = req.params.id
+        const { userThatWillBeFollowed } = req.body
+
+        await cluster.transactions().run(async (ctx) => {
+            ctx.query(
+                " \
+            update `users` \
+            set `users`.`following` = array_append(`users`.`following`, $1) \
+            where id = $2 \
+            ",
+                { parameters: [userThatWillBeFollowed, userThatWillFollow] }
+            )
+
+            ctx.query(
+                " \
+            update `users` \
+            set `users`.followers = array_append(`users`.followers, $1) \
+            where id = $2 \
+            ",
+                { parameters: [userThatWillFollow, userThatWillBeFollowed] }
+            )
+        })
+
+        return res.status(200).json({ message: "Follow request was processed successfully!" })
+    } catch (error) {
+        return res.status(500).json({ message: "Error processing follow request!", error })
+    }
+}
+
 export default {
     get,
     // getUsersThatCommentedAndLikedPost,
     post,
     put,
     delete: _delete,
-    getUserPosts
+    getUserPosts,
+    follow
 }
