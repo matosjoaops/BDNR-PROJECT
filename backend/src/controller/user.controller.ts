@@ -130,7 +130,7 @@ async function _delete(req: Request, res: Response) {
                     "\
                     update `posts`\
                     set `posts`.comments = array_remove(`posts`.comments, $1) \
-                    ",
+                    where array_contains(comments, $1)",
                     { parameters: [comment] }
                 )
             })
@@ -139,7 +139,7 @@ async function _delete(req: Request, res: Response) {
                 "\
                 update `posts`\
                 set `posts`.liked_by = array_remove(`posts`.liked_by, $1)\
-                ",
+                where array_contains(liked_by, $1)",
                 { parameters: [userId] }
             )
 
