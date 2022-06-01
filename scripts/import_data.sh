@@ -61,7 +61,6 @@ echo
 echo "Creating indexes..."
 echo
 
-#cbq -u Administrator -p bdnr-12345 --script="\CONNECT http://0.0.0.0:8091"
 
 cbq -u Administrator -p bdnr-12345 -e "http://0.0.0.0:8091" --script="CREATE PRIMARY INDEX ON \`users\`;"
 sleep 1
@@ -83,10 +82,6 @@ sleep 1
 echo
 echo "Adding couchbase2 to the cluster"
 echo
-
-# curl -u Administrator:bdnr-12345 -v -X POST \
-# 0.0.0.0:8091/controller/addNode \
-# -d 'hostname=172.19.0.4&user=Administrator&password=bdnr-12345&services=kv'
 
 couchbase-cli server-add -c http://0.0.0.0:8091 \
 --username Administrator \

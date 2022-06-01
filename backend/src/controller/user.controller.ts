@@ -111,11 +111,7 @@ async function _delete(req: Request, res: Response) {
     try {
         const cluster: Cluster = await connectToCluster()
 
-        // const bucket: Bucket = cluster.bucket("users")
-        // const collection: Collection = bucket.defaultCollection()
-
         const userId = req.params.id
-        // await collection.remove(userId)
 
         await cluster.transactions().run(async (ctx) => {
             ctx.query("delete from `users` where id = $1", { parameters: [userId] })
@@ -257,7 +253,6 @@ async function follow(req: Request, res: Response) {
 
 export default {
     get,
-    // getUsersThatCommentedAndLikedPost,
     post,
     put,
     delete: _delete,

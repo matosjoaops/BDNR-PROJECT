@@ -294,7 +294,7 @@ async function getComments(req: Request, res: Response) {
 async function postComment(req: Request, res: Response) {
 
     const { postId } = req.params
-    const { created_by, text} = req.body // TODO: userID should come from JWT token, not from request body. 
+    const { created_by, text} = req.body
 
     try {
 
@@ -305,8 +305,6 @@ async function postComment(req: Request, res: Response) {
         const collection: Collection = bucket.defaultCollection()
 
         // Create new comment object.
-        // Since we are handling comment's IDs ourselves, we try to generate an unique number for it.
-        // Not the best solution, but ...
         const comment = {
             id: String(Math.floor((Date.now() * Math.random()) / 1000)),
             text: text,
@@ -362,7 +360,7 @@ async function postComment(req: Request, res: Response) {
 async function updateComment(req: Request, res: Response) {
 
     const { postId, commentId} = req.params
-    const { text} = req.body // TODO: userID should come from JWT token, not from request body. 
+    const { text} = req.body
 
     try {
 
