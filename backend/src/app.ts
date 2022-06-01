@@ -14,6 +14,5 @@ app.listen(port, () => {
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())
 
-app.use("/hello", routes.hello)
 app.use("/user", routes.user)
 app.use("/post", routes.post)
