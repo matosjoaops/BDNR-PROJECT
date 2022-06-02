@@ -2,13 +2,19 @@
 
 ### To run the project:
 
+From the root of the project run the script `setup.sh`:
+
 ```bash
 ./setup.sh
 ```
 
+Next, open another terminal window and navigate to the `scripts` directory:
+
 ```bash
 cd scripts
 ```
+
+From this directory, run the `entry_load_data.sh` script:
 
 ```bash
 ./entry_load_data.sh
