@@ -20,4 +20,4 @@ From this directory, run the `entry_load_data.sh` script:
 ./entry_load_data.sh
 ```
 
-The API is available at http://localhost:5000, and the couchbase nodes are available at http://localhost:8091 and http://localhost:18091.
+The API is available at http://localhost:5000, and the couchbase nodes are available at http://localhost:8091 and http://localhost:18091. The username and passwords of both couchbase nodes are `Admininstrator` / `bdnr-12345`.
