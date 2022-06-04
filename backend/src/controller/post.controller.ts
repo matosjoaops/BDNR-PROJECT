@@ -263,6 +263,101 @@ async function getItemTypeDistribution(req: Request, res: Response) {
     }
 }
 
+/**
+ * Like a post.
+ */
+async function likePost(req: Request, res: Response) {
+
+    const { postId } = req.params
+    const { userId } = req.body
+
+    try {
+
+        const cluster: Cluster = await connectToCluster()
+        const bucket: Bucket = cluster.bucket("posts")
+        const collection: Collection = bucket.defaultCollection()
+
+        // Fetch all data for post.
+        await collection
+            .get(postId)
+            .then(async ({ content }) => {
+
+                if (content.liked_by.includes(userId)) {
+                    return res.status(500).send({
+                        message: `User with id ${userId} already have liked post with id ${postId}`,
+                    })
+                }
+
+                await content.liked_by.push(userId)
+
+                await collection.upsert(postId, content)
+
+                return res.status(200).json(`The post with id ${postId} was liked by user with id ${userId}`)
+            })
+            .catch((error) =>
+                {return res.status(500).send({
+                    message: `Post with id '${postId}' not found`,
+                    error
+                })}
+            )
+        
+    } catch (error) {
+
+        return res.status(500).json({ message: "Error liking post", error })
+   
+    }
+}
+
+/**
+ * Unlike a post.
+ */
+async function removeLikePost(req: Request, res: Response) {
+
+    const { postId } = req.params
+    const { userId } = req.body
+
+    try {
+
+        const cluster: Cluster = await connectToCluster()
+        const bucket: Bucket = cluster.bucket("posts")
+        const collection: Collection = bucket.defaultCollection()
+
+        // Fetch all data for post.
+        await collection
+            .get(postId)
+            .then(async ({ content }) => {
+
+                console.log(content)
+
+                if (!content.liked_by.includes(userId)) {
+                    return res.status(500).send({
+                        message: `User with id ${userId} does not have liked post with id ${postId}`,
+                    })
+                }
+
+                const arr = content.liked_by.filter((item: { id: string }) => item.id !== String(userId));
+
+                content.liked_by = arr
+
+                await collection.upsert(postId, content)
+
+                return res.status(200).json(`The post with id ${postId} was unliked by user with id ${userId}`)
+            })
+            .catch((error) =>
+                {
+                    console.log(error)
+                    return res.status(500).send({
+                    message: `Post with id '${postId}' not found`,
+                    error
+                })}
+            )
+        
+    } catch (error) {
+
+        return res.status(500).json({ message: "Error unliking post", error })
+   
+    }
+}
 
 
 // COMMENTS
@@ -342,7 +437,7 @@ async function postComment(req: Request, res: Response) {
                 // Update post object.
                 await collection.upsert(postId, updatedPost)
 
-                res.status(200).json(comment)
+                return res.status(200).json(comment)
 
             })
             .catch((error) =>
@@ -501,6 +596,8 @@ export default {
     post,
     put,
     delete: _delete,
+    likePost,
+    removeLikePost,
     getRatio,
     getPostTypeDistribution,
     getItemTypeDistribution,

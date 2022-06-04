@@ -13,6 +13,8 @@ router.get("/", controller.getPosts)
 router.post("/", controller.post)
 router.put("/:id", controller.put)
 router.delete("/:id", controller.delete)
+router.post("/:postId/like", controller.likePost)
+router.delete("/:postId/like", controller.removeLikePost)
 
 // Comments
 router.get("/:postId/comments", controller.getComments)
