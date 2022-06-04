@@ -466,10 +466,10 @@ async function deleteComment(req: Request, res: Response) {
 
             })
             .catch((error) =>
-            return res.status(500).send({
+            {return res.status(500).send({
                     message: `Unexpected error ocurred.`,
                     error
-                })
+                })}
             )
         
     } catch (error) {
