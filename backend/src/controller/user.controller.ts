@@ -72,6 +72,7 @@ async function put(req: Request, res: Response) {
                 await collection.upsert(userId, updatedUser)
             })
             .catch((error) =>{
+                shouldEnd = true;
                 return res.status(500).send({
                     message: `User with id '${userId}' not found`,
                     error
