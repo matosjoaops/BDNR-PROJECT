@@ -8,7 +8,7 @@ From the root of the project run the script `setup.sh`:
 ./setup.sh
 ```
 
-Next, open another terminal window and navigate to the `scripts` directory:
+Next wait for several seconds (around 30 to be safe) before opening another terminal window and navigating to the `scripts` directory:
 
 ```bash
 cd scripts
