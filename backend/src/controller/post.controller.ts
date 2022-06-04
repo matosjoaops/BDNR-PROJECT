@@ -121,6 +121,8 @@ async function put(req: Request, res: Response) {
 
         const postId = req.params.id
 
+        let shouldEnd = false
+
         await collection
             .get(postId)
             .then(async ({ content }) => {
@@ -142,11 +144,13 @@ async function put(req: Request, res: Response) {
                 await collection.upsert(postId, updatedPost)
             })
             .catch((error) =>
-                {return res.status(500).send({
+                {shouldEnd = true; return res.status(500).send({
                     message: `Post with id '${postId}' not found`,
                     error
                 })}
             )
+
+            if (shouldEnd) return
 
             return res.status(200).json({ message: `Post with id '${postId}' successfully updated` })
     } catch (error) {
@@ -312,6 +316,8 @@ async function postComment(req: Request, res: Response) {
             liked_by: []
         };
 
+        let shouldEnd = false
+
         // Fetch all data for post.
         await collection
             .get(postId)
@@ -340,7 +346,7 @@ async function postComment(req: Request, res: Response) {
 
             })
             .catch((error) =>
-            {return res.status(500).send({
+            {shouldEnd = true; return res.status(500).send({
                     message: `Post with id '${postId}' not found`,
                     error
                 })}
@@ -369,6 +375,8 @@ async function updateComment(req: Request, res: Response) {
         const bucket: Bucket = cluster.bucket("posts")
 
         const collection: Collection = bucket.defaultCollection()
+
+        let shouldEnd = false
 
         // Fetch all data for post.
         await collection
@@ -409,7 +417,7 @@ async function updateComment(req: Request, res: Response) {
 
             })
             .catch((error) =>
-                {return res.status(500).send({
+                {shouldEnd = true; return res.status(500).send({
                     message: `Post with id '${postId}' not found`,
                     error
                 })}
@@ -437,6 +445,7 @@ async function deleteComment(req: Request, res: Response) {
 
         const collection: Collection = bucket.defaultCollection()
 
+        let shouldEnd = false
 
         // Fetch all data for post.
         await collection
@@ -466,11 +475,12 @@ async function deleteComment(req: Request, res: Response) {
 
             })
             .catch((error) =>
-            {return res.status(500).send({
+            {shouldEnd = true; return res.status(500).send({
                     message: `Unexpected error ocurred.`,
                     error
                 })}
             )
+        
         
     } catch (error) {
 

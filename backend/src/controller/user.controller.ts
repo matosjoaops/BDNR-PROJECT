@@ -44,6 +44,8 @@ async function put(req: Request, res: Response) {
 
         const userId = req.params.id
 
+        let shouldEnd = false
+
         await collection
             .get(userId)
             .then(async ({ content }) => {
@@ -75,6 +77,7 @@ async function put(req: Request, res: Response) {
                     error
                 })}
             )
+        if (shouldEnd) return
 
         return res.status(200).json({ message: `User with id '${userId}' successfully updated` })
     } catch (error) {
