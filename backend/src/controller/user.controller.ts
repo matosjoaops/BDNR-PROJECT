@@ -50,13 +50,13 @@ async function put(req: Request, res: Response) {
             .get(userId)
             .then(async ({ content }) => {
                 if (req.body.id && req.body.id !== userId)
-                return res.status(500).json({ message: "The 'id' parameter cannot be updated" })
+               {shouldEnd = true; return res.status(500).json({ message: "The 'id' parameter cannot be updated" })}
 
                 if (req.body.followers && req.body.followers.contains(userId))
-                return res.status(500).json({ message: "The user cannot follow herself" })
-
+                {shouldEnd = true; return res.status(500).json({ message: "The user cannot follow herself" })
+}
                 if (req.body.following && req.body.following.contains(userId))
-                return res.status(500).json({ message: "The user cannot follow herself" })
+                {shouldEnd = true; return res.status(500).json({ message: "The user cannot follow herself" })}
 
                 const updatedUser = {
                     bio: req.body.bio ? req.body.bio : content.bio,

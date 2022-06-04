@@ -127,7 +127,7 @@ async function put(req: Request, res: Response) {
             .get(postId)
             .then(async ({ content }) => {
                 if (req.body.timestamp)
-                return res.status(500).json({ message: "The 'timestamp' parameter cannot be updated" })
+                {shouldEnd = true; return res.status(500).json({ message: "The 'timestamp' parameter cannot be updated" })}
 
                 const updatedPost = {
                     post_title: req.body.post_title ? req.body.post_title : content.post_title,
