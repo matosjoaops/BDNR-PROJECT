@@ -19,9 +19,9 @@ async function get(req: Request, res: Response) {
 
         const result = await collection.get(postId)
 
-        res.status(200).json(result.content)
+        return res.status(200).json(result.content)
     } catch (error) {
-        res.status(500).json({ message: "Error getting post", error })
+        return res.status(500).json({ message: "Error getting post", error })
     }
 }
 
@@ -55,9 +55,9 @@ async function getPosts(req: Request, res: Response) {
             result.push({ id: row.id, ...row.posts })
         })
 
-        res.status(200).json(result)
+        return res.status(200).json(result)
     } catch (error) {
-        res.status(500).json({ message: "Error getting posts", error })
+        return res.status(500).json({ message: "Error getting posts", error })
     }
 }
 
@@ -84,9 +84,9 @@ async function getUserLikedPosts(req: Request, res: Response) {
             result.push({ id: row.id, ...row.posts })
         })
 
-        res.status(200).json(result)
+        return res.status(200).json(result)
     } catch (error) {
-        res.status(500).json({ message: `Error getting posts liked by user ${req.params.userId}`, error })
+        return res.status(500).json({ message: `Error getting posts liked by user ${req.params.userId}`, error })
     }
 }
 
@@ -103,9 +103,9 @@ async function post(req: Request, res: Response) {
         const postId = req.body.id
         await collection.insert(postId, req.body)
 
-        res.status(200).json({ message: `Post with id '${postId}' successfully created` })
+        return res.status(200).json({ message: `Post with id '${postId}' successfully created` })
     } catch (error) {
-        res.status(500).json({ message: "Error creating post", error })
+        return res.status(500).json({ message: "Error creating post", error })
     }
 }
 
@@ -125,7 +125,7 @@ async function put(req: Request, res: Response) {
             .get(postId)
             .then(async ({ content }) => {
                 if (req.body.timestamp)
-                    res.status(500).json({ message: "The 'timestamp' parameter cannot be updated" })
+                return res.status(500).json({ message: "The 'timestamp' parameter cannot be updated" })
 
                 const updatedPost = {
                     post_title: req.body.post_title ? req.body.post_title : content.post_title,
@@ -142,15 +142,15 @@ async function put(req: Request, res: Response) {
                 await collection.upsert(postId, updatedPost)
             })
             .catch((error) =>
-                res.status(500).send({
+                {return res.status(500).send({
                     message: `Post with id '${postId}' not found`,
                     error
-                })
+                })}
             )
 
-        res.status(200).json({ message: `Post with id '${postId}' successfully updated` })
+            return res.status(200).json({ message: `Post with id '${postId}' successfully updated` })
     } catch (error) {
-        res.status(500).json({ message: "Error updating post", error })
+        return res.status(500).json({ message: "Error updating post", error })
     }
 }
 
@@ -167,9 +167,9 @@ async function _delete(req: Request, res: Response) {
         const postId = req.params.id
         await collection.remove(postId)
 
-        res.status(200).json({ message: `Post with id '${postId}' successfully removed` })
+        return res.status(200).json({ message: `Post with id '${postId}' successfully removed` })
     } catch (error) {
-        res.status(500).json({ message: "Error deleting post", error })
+        return res.status(500).json({ message: "Error deleting post", error })
     }
 }
 
@@ -278,11 +278,11 @@ async function getComments(req: Request, res: Response) {
             parameters: [postId]
         })
 
-        res.status(200).json(queryResult)
+        return res.status(200).json(queryResult)
 
     } catch (error) {
 
-        res.status(500).json({ message: "Error getting comments", error })
+        return res.status(500).json({ message: "Error getting comments", error })
     
     }
 
@@ -340,15 +340,15 @@ async function postComment(req: Request, res: Response) {
 
             })
             .catch((error) =>
-                res.status(500).send({
+            {return res.status(500).send({
                     message: `Post with id '${postId}' not found`,
                     error
-                })
+                })}
             )
         
     } catch (error) {
 
-        res.status(500).json({ message: "Error creating comment", error })
+        return res.status(500).json({ message: "Error creating comment", error })
    
     }
 
@@ -405,19 +405,19 @@ async function updateComment(req: Request, res: Response) {
                 // Update post object.
                 await collection.upsert(postId, updatedPost)
 
-                res.status(200).json({ message: `Comment for post with id '${postId}' was successfully updated` })
+                return res.status(200).json({ message: `Comment for post with id '${postId}' was successfully updated` })
 
             })
             .catch((error) =>
-                res.status(500).send({
+                {return res.status(500).send({
                     message: `Post with id '${postId}' not found`,
                     error
-                })
+                })}
             )
         
     } catch (error) {
 
-        res.status(500).json({ message: "Error updating comment", error })
+        return res.status(500).json({ message: "Error updating comment", error })
    
     }
 }
@@ -466,7 +466,7 @@ async function deleteComment(req: Request, res: Response) {
 
             })
             .catch((error) =>
-                res.status(500).send({
+            return res.status(500).send({
                     message: `Unexpected error ocurred.`,
                     error
                 })
@@ -474,7 +474,7 @@ async function deleteComment(req: Request, res: Response) {
         
     } catch (error) {
 
-        res.status(500).json({ message: "Error while deleting comment", error })
+        return res.status(500).json({ message: "Error while deleting comment", error })
    
     }
 }
