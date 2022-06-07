@@ -1,8 +1,7 @@
 import { Request, Response } from "express"
-import {  Bucket, Cluster, Collection } from "couchbase"
+import { Bucket, Cluster, Collection } from "couchbase"
 
 import connectToCluster from "../config/connect"
-
 
 // POSTS.
 
@@ -38,14 +37,16 @@ async function getPosts(req: Request, res: Response) {
         const itemType = req.body.item_type
         const postType = req.body.post_type
 
-        const queryResult = await cluster.query("SELECT *, meta().id FROM posts\
+        const queryResult = await cluster.query(
+            "SELECT *, meta().id FROM posts\
             where \
                 item_type like $itemType and\
                 post_type like $postType\
             order by timestamp desc\
             offset $offset\
             limit $limit;",
-            { parameters: {itemType, postType, offset, limit} })
+            { parameters: { itemType, postType, offset, limit } }
+        )
 
         const result: JSON[] = []
 
@@ -70,11 +71,13 @@ async function getUserLikedPosts(req: Request, res: Response) {
 
         const userId = req.params.userId
 
-        const queryResult = await cluster.query("SELECT *, meta().id FROM posts\
+        const queryResult = await cluster.query(
+            "SELECT *, meta().id FROM posts\
             where \
                 $userId in liked_by\
             order by timestamp desc;",
-            { parameters: {userId} })
+            { parameters: { userId } }
+        )
 
         const result: JSON[] = []
 
@@ -86,7 +89,9 @@ async function getUserLikedPosts(req: Request, res: Response) {
 
         return res.status(200).json(result)
     } catch (error) {
-        return res.status(500).json({ message: `Error getting posts liked by user ${req.params.userId}`, error })
+        return res
+            .status(500)
+            .json({ message: `Error getting posts liked by user ${req.params.userId}`, error })
     }
 }
 
@@ -126,8 +131,12 @@ async function put(req: Request, res: Response) {
         await collection
             .get(postId)
             .then(async ({ content }) => {
-                if (req.body.timestamp)
-                {shouldEnd = true; return res.status(500).json({ message: "The 'timestamp' parameter cannot be updated" })}
+                if (req.body.timestamp) {
+                    shouldEnd = true
+                    return res
+                        .status(500)
+                        .json({ message: "The 'timestamp' parameter cannot be updated" })
+                }
 
                 const updatedPost = {
                     post_title: req.body.post_title ? req.body.post_title : content.post_title,
@@ -143,16 +152,17 @@ async function put(req: Request, res: Response) {
 
                 await collection.upsert(postId, updatedPost)
             })
-            .catch((error) =>
-                {shouldEnd = true; return res.status(500).send({
+            .catch((error) => {
+                shouldEnd = true
+                return res.status(500).send({
                     message: `Post with id '${postId}' not found`,
                     error
-                })}
-            )
+                })
+            })
 
-            if (shouldEnd) return
+        if (shouldEnd) return
 
-            return res.status(200).json({ message: `Post with id '${postId}' successfully updated` })
+        return res.status(200).json({ message: `Post with id '${postId}' successfully updated` })
     } catch (error) {
         return res.status(500).json({ message: "Error updating post", error })
     }
@@ -176,7 +186,6 @@ async function _delete(req: Request, res: Response) {
         return res.status(500).json({ message: "Error deleting post", error })
     }
 }
-
 
 /**
  * Get list of posts with ratio of likes to comments higher than a specified threshold.
@@ -224,19 +233,19 @@ async function getPostTypeDistribution(req: Request, res: Response) {
     try {
         const cluster: Cluster = await connectToCluster()
 
-        const queryResult = await cluster.query("\
+        const queryResult = await cluster.query(
+            "\
             select\
                 (count(*) / (select count(*) as total from posts posts1)[0].total) as ratio,\
                 post_type\
             from posts\
+            where post_type is NOT NULL\
             group by post_type;"
         )
 
         return res.status(200).json(queryResult.rows)
     } catch (error) {
-        return res
-            .status(500)
-            .json({ message: "Error getting post type distribution!", error })
+        return res.status(500).json({ message: "Error getting post type distribution!", error })
     }
 }
 
@@ -247,19 +256,19 @@ async function getItemTypeDistribution(req: Request, res: Response) {
     try {
         const cluster: Cluster = await connectToCluster()
 
-        const queryResult = await cluster.query("\
+        const queryResult = await cluster.query(
+            "\
             select\
                 (count(*) / (select count(*) as total from posts posts1)[0].total) as ratio,\
                 item_type\
             from posts\
+            where item_type is not null\
             group by item_type;"
         )
 
         return res.status(200).json(queryResult.rows)
     } catch (error) {
-        return res
-            .status(500)
-            .json({ message: "Error getting item type distribution!", error })
+        return res.status(500).json({ message: "Error getting item type distribution!", error })
     }
 }
 
@@ -267,12 +276,10 @@ async function getItemTypeDistribution(req: Request, res: Response) {
  * Like a post.
  */
 async function likePost(req: Request, res: Response) {
-
     const { postId } = req.params
     const { userId } = req.body
 
     try {
-
         const cluster: Cluster = await connectToCluster()
         const bucket: Bucket = cluster.bucket("posts")
         const collection: Collection = bucket.defaultCollection()
@@ -281,10 +288,9 @@ async function likePost(req: Request, res: Response) {
         await collection
             .get(postId)
             .then(async ({ content }) => {
-
                 if (content.liked_by.includes(userId)) {
                     return res.status(500).send({
-                        message: `User with id ${userId} already have liked post with id ${postId}`,
+                        message: `User with id ${userId} already have liked post with id ${postId}`
                     })
                 }
 
@@ -292,19 +298,18 @@ async function likePost(req: Request, res: Response) {
 
                 await collection.upsert(postId, content)
 
-                return res.status(200).json(`The post with id ${postId} was liked by user with id ${userId}`)
+                return res
+                    .status(200)
+                    .json(`The post with id ${postId} was liked by user with id ${userId}`)
             })
-            .catch((error) =>
-                {return res.status(500).send({
+            .catch((error) => {
+                return res.status(500).send({
                     message: `Post with id '${postId}' not found`,
                     error
-                })}
-            )
-        
+                })
+            })
     } catch (error) {
-
         return res.status(500).json({ message: "Error liking post", error })
-   
     }
 }
 
@@ -312,12 +317,10 @@ async function likePost(req: Request, res: Response) {
  * Unlike a post.
  */
 async function removeLikePost(req: Request, res: Response) {
-
     const { postId } = req.params
     const { userId } = req.body
 
     try {
-
         const cluster: Cluster = await connectToCluster()
         const bucket: Bucket = cluster.bucket("posts")
         const collection: Collection = bucket.defaultCollection()
@@ -326,77 +329,70 @@ async function removeLikePost(req: Request, res: Response) {
         await collection
             .get(postId)
             .then(async ({ content }) => {
-
                 console.log(content)
 
                 if (!content.liked_by.includes(userId)) {
                     return res.status(500).send({
-                        message: `User with id ${userId} does not have liked post with id ${postId}`,
+                        message: `User with id ${userId} does not have liked post with id ${postId}`
                     })
                 }
 
-                const arr = content.liked_by.filter((item: { id: string }) => item.id !== String(userId));
+                const arr = content.liked_by.filter(
+                    (item: { id: string }) => item.id !== String(userId)
+                )
 
                 content.liked_by = arr
 
                 await collection.upsert(postId, content)
 
-                return res.status(200).json(`The post with id ${postId} was unliked by user with id ${userId}`)
+                return res
+                    .status(200)
+                    .json(`The post with id ${postId} was unliked by user with id ${userId}`)
             })
-            .catch((error) =>
-                {
-                    console.log(error)
-                    return res.status(500).send({
+            .catch((error) => {
+                console.log(error)
+                return res.status(500).send({
                     message: `Post with id '${postId}' not found`,
                     error
-                })}
-            )
-        
+                })
+            })
     } catch (error) {
-
         return res.status(500).json({ message: "Error unliking post", error })
-   
     }
 }
 
-
 // COMMENTS
 
-/** 
- * Returns comments for a specific post. 
+/**
+ * Returns comments for a specific post.
  */
-async function getComments(req: Request, res: Response) { 
-    
+async function getComments(req: Request, res: Response) {
     const { postId } = req.params
 
     try {
-        
         const cluster: Cluster = await connectToCluster()
 
-        const queryResult = await cluster.query("SELECT comments FROM posts WHERE meta().id like $1", {
-            parameters: [postId]
-        })
+        const queryResult = await cluster.query(
+            "SELECT comments FROM posts WHERE meta().id like $1",
+            {
+                parameters: [postId]
+            }
+        )
 
         return res.status(200).json(queryResult)
-
     } catch (error) {
-
         return res.status(500).json({ message: "Error getting comments", error })
-    
     }
-
 }
 
 /**
  * Creates a new comment for a specific post.
  */
 async function postComment(req: Request, res: Response) {
-
     const { postId } = req.params
-    const { created_by, text} = req.body
+    const { created_by, text } = req.body
 
     try {
-
         const cluster: Cluster = await connectToCluster()
 
         const bucket: Bucket = cluster.bucket("posts")
@@ -409,7 +405,7 @@ async function postComment(req: Request, res: Response) {
             text: text,
             created_by: created_by,
             liked_by: []
-        };
+        }
 
         let shouldEnd = false
 
@@ -417,7 +413,6 @@ async function postComment(req: Request, res: Response) {
         await collection
             .get(postId)
             .then(async ({ content }) => {
-
                 // Append new comment.
                 await content.comments.push(comment)
 
@@ -430,7 +425,7 @@ async function postComment(req: Request, res: Response) {
                     pictures: content.pictures,
                     price_range: content.price_range,
                     created_by: content.created_by,
-                    liked_by:  content.liked_by,
+                    liked_by: content.liked_by,
                     comments: content.comments
                 }
 
@@ -438,33 +433,27 @@ async function postComment(req: Request, res: Response) {
                 await collection.upsert(postId, updatedPost)
 
                 return res.status(200).json(comment)
-
             })
-            .catch((error) =>
-            {shouldEnd = true; return res.status(500).send({
+            .catch((error) => {
+                shouldEnd = true
+                return res.status(500).send({
                     message: `Post with id '${postId}' not found`,
                     error
-                })}
-            )
-        
+                })
+            })
     } catch (error) {
-
         return res.status(500).json({ message: "Error creating comment", error })
-   
     }
-
 }
 
 /**
  * Edit data from an existing comment.
  */
 async function updateComment(req: Request, res: Response) {
-
-    const { postId, commentId} = req.params
-    const { text} = req.body
+    const { postId, commentId } = req.params
+    const { text } = req.body
 
     try {
-
         const cluster: Cluster = await connectToCluster()
 
         const bucket: Bucket = cluster.bucket("posts")
@@ -477,17 +466,18 @@ async function updateComment(req: Request, res: Response) {
         await collection
             .get(postId)
             .then(async ({ content }) => {
-
                 // Get comment to edit.
                 const commentToEdit = content.comments.find((item: { id: string }) => {
-                    return item.id == commentId;
-                });
+                    return item.id == commentId
+                })
 
                 // Update comment.
                 commentToEdit.text = text
 
                 // Create new array of comments without the edited comment.
-                const arr = content.comments.filter((item: { id: string }) => item.id !== String(commentId));
+                const arr = content.comments.filter(
+                    (item: { id: string }) => item.id !== String(commentId)
+                )
 
                 // Add updated comment again
                 await content.comments.push(commentToEdit)
@@ -501,27 +491,26 @@ async function updateComment(req: Request, res: Response) {
                     pictures: content.pictures,
                     price_range: content.price_range,
                     created_by: content.created_by,
-                    liked_by:  content.liked_by,
+                    liked_by: content.liked_by,
                     comments: content.comments
                 }
 
                 // Update post object.
                 await collection.upsert(postId, updatedPost)
 
-                return res.status(200).json({ message: `Comment for post with id '${postId}' was successfully updated` })
-
+                return res.status(200).json({
+                    message: `Comment for post with id '${postId}' was successfully updated`
+                })
             })
-            .catch((error) =>
-                {shouldEnd = true; return res.status(500).send({
+            .catch((error) => {
+                shouldEnd = true
+                return res.status(500).send({
                     message: `Post with id '${postId}' not found`,
                     error
-                })}
-            )
-        
+                })
+            })
     } catch (error) {
-
         return res.status(500).json({ message: "Error updating comment", error })
-   
     }
 }
 
@@ -529,11 +518,9 @@ async function updateComment(req: Request, res: Response) {
  * Delete a comment.
  */
 async function deleteComment(req: Request, res: Response) {
-
-    const { postId, commentId} = req.params
+    const { postId, commentId } = req.params
 
     try {
-
         const cluster: Cluster = await connectToCluster()
 
         const bucket: Bucket = cluster.bucket("posts")
@@ -546,9 +533,10 @@ async function deleteComment(req: Request, res: Response) {
         await collection
             .get(postId)
             .then(async ({ content }) => {
-
                 // Create new array of comments without the specified comment.
-                const arr = content.comments.filter((item: { id: string }) => item.id !== String(commentId));
+                const arr = content.comments.filter(
+                    (item: { id: string }) => item.id !== String(commentId)
+                )
 
                 // Build new post object.
                 const updatedPost = {
@@ -559,35 +547,28 @@ async function deleteComment(req: Request, res: Response) {
                     pictures: content.pictures,
                     price_range: content.price_range,
                     created_by: content.created_by,
-                    liked_by:  content.liked_by,
+                    liked_by: content.liked_by,
                     comments: arr
                 }
 
                 // Update post object.
                 await collection.upsert(postId, updatedPost)
 
-                res.status(200).json({ message: `Comment '${commentId}' for post '${postId}' was successfully deleted` })
-
+                res.status(200).json({
+                    message: `Comment '${commentId}' for post '${postId}' was successfully deleted`
+                })
             })
-            .catch((error) =>
-            {shouldEnd = true; return res.status(500).send({
+            .catch((error) => {
+                shouldEnd = true
+                return res.status(500).send({
                     message: `Unexpected error ocurred.`,
                     error
-                })}
-            )
-        
-        
+                })
+            })
     } catch (error) {
-
         return res.status(500).json({ message: "Error while deleting comment", error })
-   
     }
 }
-
-
-
-
-
 
 export default {
     get,
